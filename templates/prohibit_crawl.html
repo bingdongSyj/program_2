@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Prohibit Crawl</title>
+</head>
+<script src="{% static 'scripts/jquery/jquery-1.7.1.js' %}"></script>
+<script>
+    function changeCode() {
+        var url = "{% url 'back_end:get_pro_code' %}";
+        $.ajax({
+            type: 'get',
+            url: url,
+            success: function (data) {
+                $('#imgVcode').attr('src', url+'?'+(new Date()).getTime());
+            }
+        });
+
+    }
+</script>
+<body>
+<img id="imgVcode" src="{% url 'back_end:get_pro_code' %}" alt=""> <br /> <a href="javascript:void(0);" onclick="changeCode();">看不清，换一张</a>
+    <br /><input type="text" id="proCrawlCode" maxlength="5" placeholder="请输入验证码">
+    <button id="submitCode">验 证</button>
+    <script>
+        $("#submitCode").click(function () {
+            $.ajax({
+                type: 'get',
+                url: '{% url 'back_end:validate_pro_code' %}?pro_crawl_code='+$("#proCrawlCode").val(),
+                success: function (data) {
+                    if (data['status'] == '200'){
+                        window.location.href = "http://"+window.location.host + '/' + data['data'];
+                    }else{
+                        alert(data['data']);
+                    }
+                }
+            })
+        });
+    </script>
+</body>
+</html>
